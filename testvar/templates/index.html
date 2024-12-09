@@ -1,0 +1,20 @@
+<!-- testvar/templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard App</title>
+</head>
+<body>
+    <h1>Welcome to the Flashcard App!</h1>
+    <h2>Flashcard Sets:</h2>
+    <ul>
+        {% for set in flashcard_sets %}
+            <li>{{ set.name }}</li>  <!-- Assuming FlashcardSet has a 'name' field -->
+        {% empty %}
+            <li>No flashcard sets available.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
