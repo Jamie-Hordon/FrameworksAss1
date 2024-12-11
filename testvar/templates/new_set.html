@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/new_set.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Flashcard Set</title>
+    
+</head>
+<body>
+    <header>
+        <h1>TestVar</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'index' %}">Home</a></li>
+                <li><a href="{% url 'play_flashcard' %}">Play</a></li>
+                <li><a href="{% url 'flashcard_set_list' %}">Sets</a></li>
+                <li><a href="{% url 'new_set' %}">New Set</a></li>
+                <li><a href="{% url 'admin:index' %}">Admin Log In</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <h1>Create a New Flashcard Set</h1>
+        <form method="POST" action="{% url 'new_set' %}">
+            <div>
+                <label for="name">Set Name:</label>
+                <input type="text" id="name" name="name" placeholder="Enter the set name" required>
+            </div>
+            <div>
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" placeholder="Enter a description (optional)"></textarea>
+            </div>
+            <button type="submit">Create Set</button>
+        </form>
+    </main>
+</body>
+</html>

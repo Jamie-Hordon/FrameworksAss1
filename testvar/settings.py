@@ -27,6 +27,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Static Stuff
+STATIC_URL = '/static/'
+# Directories to search for additional static files
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # Adjust to match your project structure
+]
+# Define STATIC_ROOT to collect static files when running collectstatic
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Application definition
 

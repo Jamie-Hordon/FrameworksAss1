@@ -21,7 +21,7 @@ class FlashcardSet(models.Model):
 
 class Flashcard(models.Model):
     set = models.ForeignKey(
-        FlashcardSet, on_delete=models.CASCADE, related_name='cards'
+        FlashcardSet, on_delete=models.CASCADE, related_name='flashcards'
     )  # Links a card to a set
     question = models.TextField()  # Question on the card
     answer = models.TextField()  # Answer on the card

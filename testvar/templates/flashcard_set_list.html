@@ -1,0 +1,164 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flashcard Sets</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/flashcard_set_list.css' %}">
+</head>
+<body>
+    <header>
+        <h1>TestVar</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'index' %}">Home</a></li>
+                <li><a href="{% url 'play_flashcard' %}">Play</a></li>
+                <li><a href="{% url 'flashcard_set_list' %}">Sets</a></li>
+                <li><a href="{% url 'new_set' %}">New Set</a></li>
+                <li><a href="{% url 'admin:index' %}">Admin Log In</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    
+    <div class="create-flashcard-button-container">
+        <button onclick="openNewFlashcardForm()">Create New Flashcard</button>
+    </div>
+    <div class="title-container">
+        <h1>Flashcard Sets</h1><br>
+        <h2>Select a set to view its cards or make new ones</h2>
+    </div>
+    
+
+    <div class="flashcard-sets-container">
+        {% if flashcard_sets %}
+            <ul>
+                {% for set in flashcard_sets %}
+                    <li>
+                        <!-- Button to open the modal -->
+                        <button onclick="openModal('{{ set.id }}')">{{ set.name }} - {{ set.description }}</button>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No flashcard sets available.</p>
+        {% endif %}
+    </div>
+
+    <!-- Modal to display flashcards -->
+    <div id="flashcardModal" class="modal">
+        <div class="modal-content" data-set-id="{{ set.id }}">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Flashcards</h2>
+            <ul id="flashcardList" class="flashcard-list">
+                <!-- Flashcards will be injected here dynamically -->
+            </ul>
+            <button onclick="openNewFlashcardForm()">Create New Flashcard</button>
+        </div>
+    </div>
+    
+    <!-- Modal for creating a new flashcard -->
+    <div id="createFlashcardModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeNewFlashcardForm()">&times;</span>
+            <h2>Create New Flashcard</h2>
+            <form id="newFlashcardForm" method="POST" action="{% url 'create_flashcard' %}">
+                {% csrf_token %}
+
+                <!-- Dropdown to select a flashcard set -->
+                <div>
+                    <label for="set">Select Set:</label>
+                    <select id="set" name="set_id" required>
+                        {% for set in flashcard_sets %}
+                            <option value="{{ set.id }}">{{ set.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Input for question -->
+                <div>
+                    <label for="question">Question:</label>
+                    <input type="text" id="question" name="question" required>
+                </div>
+
+                <!-- Input for answer -->
+                <div>
+                    <label for="answer">Answer:</label>
+                    <input type="text" id="answer" name="answer" required>
+                </div>
+
+                <button type="submit">Create Flashcard</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Function to open the modal and display flashcards for the clicked set
+        function openModal(setId) {
+            // Fetch the flashcards for the selected set using AJAX
+            fetch(`/sets/${setId}/flashcards/`)
+                .then(response => response.json())
+                .then(data => {
+                    const flashcardList = document.getElementById("flashcardList");
+                    flashcardList.innerHTML = ""; // Clear existing items
+    
+                    if (data.length > 0) {
+                        data.forEach(flashcard => {
+                            const li = document.createElement("li");
+                            li.className = "flashcard-item";
+                            li.textContent = `Question: ${flashcard.question}`;
+                            flashcardList.appendChild(li);
+                        });
+                    } else {
+                        const li = document.createElement("li");
+                        li.className = "flashcard-item";
+                        li.textContent = "There are no flashcards in this set yet, feel free to add some!";
+                        flashcardList.appendChild(li);
+                    }
+    
+                    // Display the modal
+                    document.getElementById("flashcardModal").style.display = "block";
+                })
+                .catch(error => console.error('Error fetching flashcards:', error));
+        }
+    
+        // Function to close the modal
+        function closeModal() {
+            document.getElementById("flashcardModal").style.display = "none";
+        }
+    
+        // Function to open the "Create Flashcard" form
+        function openNewFlashcardForm() {
+            // Show the "Create Flashcard" form modal
+            document.getElementById("createFlashcardModal").style.display = "block";
+        }
+    
+        // Function to close the "Create Flashcard" form modal
+        function closeNewFlashcardForm() {
+            document.getElementById("createFlashcardModal").style.display = "none";
+        }
+    
+        // Function to handle form submission using AJAX
+        document.getElementById("newFlashcardForm").addEventListener("submit", function(event) {
+            event.preventDefault();  // Prevent default form submission
+    
+            const formData = new FormData(this);
+    
+            fetch("{% url 'create_flashcard' %}", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close the form modal
+                    closeNewFlashcardForm();
+    
+                    // Optionally, reload the flashcards in the main modal
+                    openModal(formData.get('set_id'));
+                }
+            })
+            .catch(error => console.error('Error creating flashcard:', error));
+        });
+    </script>
+</body>
+</html>

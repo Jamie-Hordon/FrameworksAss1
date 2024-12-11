@@ -1,19 +1,33 @@
-<!-- testvar/templates/index.html -->
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}">
+    <title>Index</title>    
     <title>Flashcard App</title>
 </head>
 <body>
+    <header>
+        <h1>TestVar</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'index' %}">Home</a></li>
+                <li><a href="{% url 'play_flashcard' %}">Play</a></li>
+                <li><a href="{% url 'flashcard_set_list' %}">Sets</a></li>
+                <li><a href="{% url 'new_set' %}">New Set</a></li>
+                <li><a href="{% url 'admin:index' %}">Admin Log In</a></li>
+            </ul>
+        </nav>
+    </header>
+    
     <h1>Welcome to the Flashcard App!</h1>
-    <h2>Flashcard Sets:</h2>
+    <h2>Current Flashcard Sets:</h2>
     <ul>
         {% for set in flashcard_sets %}
-            <li>{{ set.name }}</li>  <!-- Assuming FlashcardSet has a 'name' field -->
+            <li>{{ set.name }}</li>  
         {% empty %}
-            <li>No flashcard sets available.</li>
+            <li class="no-sets">No flashcard sets available.</li>
         {% endfor %}
     </ul>
 </body>

@@ -20,6 +20,7 @@ from django.contrib.staticfiles.views import serve
 from django.urls import path
 from flashcards import views
 from django.http import HttpResponse
+from . import views as tvviews
 
 def index(request):
     return HttpResponse("Welcome to the Flashcard App!")
@@ -28,4 +29,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('flashcards.urls')),
     path('', views.index, name='index'),
+    path("new_card/", views.create_flashcard, name='create_flashcard'), # Create new card
+    path('sets/new/', tvviews.new_flashcard_set, name='new_set'),  # Create new set
+    path('sets/', tvviews.flashcard_set_list, name='flashcard_set_list'),
+    path('sets/<int:set_id>/flashcards/', tvviews.flashcard_set_flashcards_view, name='flashcard_set_flashcards_view'),
+    path('play/', views.play_flashcard, name='play_flashcard'),
 ]

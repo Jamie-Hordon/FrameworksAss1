@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/play_flashcard.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play Flashcards</title>
+</head>
+<body>
+    <header>
+        <h1>TestVar</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'index' %}">Home</a></li>
+                <li><a href="{% url 'play_flashcard' %}">Play</a></li>
+                <li><a href="{% url 'flashcard_set_list' %}">Sets</a></li>
+                <li><a href="{% url 'new_set' %}">New Set</a></li>
+                <li><a href="{% url 'admin:index' %}">Admin Log In</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Choose a Flashcard Set</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <label for="set_id">Please select the set you want to play:</label>
+            <select name="set_id" id="set_id">
+                {% for set in flashcard_sets %}
+                    <option value="{{ set.id }}" {% if set.id == flashcard_set.id %}selected{% endif %}>{{ set.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Select Set</button>
+        </form>
+        
+        {% if flashcard %}
+            <div class="flashcard-container">
+                <p><strong>Question:</strong> {{ flashcard.question }}</p>
+        
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="set_id" value="{{ flashcard_set.id }}">
+                    <input type="hidden" name="flashcard_id" value="{{ flashcard.id }}">
+                    <label for="answer">Your Answer:</label>
+                    <input type="text" name="answer" id="answer" required>
+                    <button type="submit">Submit Answer</button>
+                </form>
+        
+                {% if is_correct is not None %}
+                    <p class="result">
+                        {% if is_correct %}
+                            <span class="correct">Correct!</span>
+                        {% else %}
+                            <span class="wrong">Wrong! The correct answer is: {{ flashcard.answer }}</span>
+                        {% endif %}
+                    </p>
+        
+                    <!-- "Next Question" button to reload page with another random flashcard -->
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="set_id" value="{{ flashcard_set.id }}">
+                        <button type="submit">Next Question</button>
+                    </form>
+                {% endif %}
+            </div>
+        {% endif %}
+        {% if message %}
+            <p class="alert alert-warning">{{ message }}</p>
+        {% endif %}
+    </main>
+</body>
+</html>
